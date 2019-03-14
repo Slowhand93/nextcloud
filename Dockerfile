@@ -25,8 +25,7 @@ RUN BUILD_DEPS=" \
     libffi-dev \
     openssl-dev \
     python-dev \
-    samba-dev \
-    apk-tools" \
+    samba-dev" \
  && apk -U upgrade && apk add \
     ${BUILD_DEPS} \
     bash \
