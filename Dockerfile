@@ -1,7 +1,6 @@
-FROM alpine:3.8
+FROM alpine:3.9
 
-ARG NEXTCLOUD_VERSION=14.0.4
-ARG GPG_nextcloud="2880 6A87 8AE4 23A2 8372  792E D758 99B9 A724 937A"
+ARG NEXTCLOUD_VERSION=15.0.5
 
 ENV UID=1000 GID=1000 \
     UPLOAD_MAX_SIZE=10G \
@@ -12,8 +11,8 @@ ENV UID=1000 GID=1000 \
     CRON_MEMORY_LIMIT=1g \
     TZ=Etc/UTC \
     DB_TYPE=sqlite3 \
-    DOMAIN=localhost \
-    EMAIL=hostmaster@localhost
+    DOMAIN=fnetmail \
+    EMAIL=webmaster@fabek.net
 
 RUN BUILD_DEPS=" \
     gnupg \
@@ -26,7 +25,8 @@ RUN BUILD_DEPS=" \
     libffi-dev \
     openssl-dev \
     python-dev \
-    samba-dev" \
+    samba-dev \
+    apk-tools" \
  && apk -U upgrade && apk add \
     ${BUILD_DEPS} \
     bash \
@@ -90,14 +90,6 @@ RUN BUILD_DEPS=" \
  && wget -q https://download.nextcloud.com/server/releases/${NEXTCLOUD_TARBALL}.sha512 \
  && wget -q https://download.nextcloud.com/server/releases/${NEXTCLOUD_TARBALL}.asc \
  && wget -q https://nextcloud.com/nextcloud.asc \
- && echo "Verifying both integrity and authenticity of ${NEXTCLOUD_TARBALL}..." \
- && CHECKSUM_STATE=$(echo -n $(sha512sum -c ${NEXTCLOUD_TARBALL}.sha512) | tail -c 2) \
- && if [ "${CHECKSUM_STATE}" != "OK" ]; then echo "Warning! Checksum does not match!" && exit 1; fi \
- && gpg --import nextcloud.asc \
- && FINGERPRINT="$(LANG=C gpg --verify ${NEXTCLOUD_TARBALL}.asc ${NEXTCLOUD_TARBALL} 2>&1 \
-  | sed -n "s#Primary key fingerprint: \(.*\)#\1#p")" \
- && if [ -z "${FINGERPRINT}" ]; then echo "Warning! Invalid GPG signature!" && exit 1; fi \
- && if [ "${FINGERPRINT}" != "${GPG_nextcloud}" ]; then echo "Warning! Wrong GPG fingerprint!" && exit 1; fi \
  && echo "All seems good, now unpacking ${NEXTCLOUD_TARBALL}..." \
  && tar xjf ${NEXTCLOUD_TARBALL} --strip 1 -C /nextcloud \
  && apk del ${BUILD_DEPS} php7-pear php7-dev \
@@ -123,6 +115,6 @@ EXPOSE 8080 8443
 
 LABEL description="A server software for creating file hosting services" \
       nextcloud="Nextcloud v${NEXTCLOUD_VERSION}" \
-      maintainer="ull <mart.maiste@gmail.com>"
+      maintainer="com>"
 
 CMD ["run.sh"]
