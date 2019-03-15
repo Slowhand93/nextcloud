@@ -31,15 +31,5 @@ echo "Done updating permissions."
 if [ ! -f /config/config.php ]; then
     # New installation, run the setup
     /usr/local/bin/setup.sh
-else
-    occ upgrade
-    if [ \( $? -ne 0 \) -a \( $? -ne 3 \) ]; then
-        echo "Trying ownCloud upgrade again to work around ownCloud upgrade bug..."
-        occ upgrade
-        if [ \( $? -ne 0 \) -a \( $? -ne 3 \) ]; then exit 1; fi
-        occ maintenance:mode --off
-        echo "...which seemed to work."
-    fi
-fi
 
 exec su-exec $UID:$GID /bin/s6-svscan /etc/s6.d
