@@ -75,8 +75,9 @@ RUN BUILD_DEPS=" \
     php7-redis \
     php7-iconv \
     php7-pear \
+    php7-pecl-apcu \
     php7-dev \
- && pecl install smbclient apcu \
+ && pecl install smbclient \
  && echo "extension=smbclient.so" > /etc/php7/conf.d/00_smbclient.ini \
  && sed -i 's|;session.save_path = "/tmp"|session.save_path = "/data/session"|g' /etc/php7/php.ini \
  && pip install -U pip \
