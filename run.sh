@@ -31,5 +31,5 @@ echo "Done updating permissions."
 if [ ! -f /config/config.php ]; then
     # New installation, run the setup
     /usr/local/bin/setup.sh
-
+fi
 exec su-exec $UID:$GID /bin/s6-svscan /etc/s6.d
